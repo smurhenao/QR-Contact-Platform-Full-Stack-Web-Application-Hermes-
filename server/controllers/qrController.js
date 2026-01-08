@@ -79,3 +79,23 @@ export const deleteQr = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// 5. ACTUALIZAR: Cambiar nombre o destino del QR
+export const updateQr = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, destinationUrl, color } = req.body;
+
+    const updatedQr = await QrCode.findByIdAndUpdate(
+      id,
+      { name, destinationUrl, color },
+      { new: true } // Esto devuelve el objeto ya actualizado
+    );
+
+    if (!updatedQr) return res.status(404).json({ msg: "QR no encontrado" });
+    
+    res.status(200).json(updatedQr);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -61,6 +61,23 @@ const Dashboard = () => {
     setTimeout(() => fetchQrs(), 1500);
   };
 
+  const handleEdit = async (qr) => {
+  const newUrl = prompt("Ingresa la nueva URL de destino:", qr.destinationUrl);
+  const newName = prompt("Ingresa el nuevo nombre:", qr.name);
+
+  if (newUrl && newName) {
+    try {
+      await axios.put(`http://localhost:5000/api/qr/${qr._id}`, 
+        { name: newName, destinationUrl: newUrl },
+        { headers: { 'x-auth-token': token } }
+      );
+      fetchQrs(); // Refrescamos la lista
+    } catch (err) {
+      alert("Error al actualizar");
+    }
+  }
+};
+
   const chartData = qrs.map(qr => ({
     name: qr.name,
     escaneos: qr.scanCount
@@ -152,6 +169,12 @@ const Dashboard = () => {
             >
               Eliminar
             </button>
+
+            <button onClick={() => handleEdit(qr)} className={`${styles.btnAction} ${styles.btnOpen}`} // Usamos el color de Abrir para que combinestyle={{ backgroundColor: '#fef3c7', color: '#92400e' }} // Un color naranja suave para diferenciarlo
+>
+  Editar
+</button>
+            
           </div>
         ))}
       </div>

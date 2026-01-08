@@ -3,9 +3,11 @@ import {
   generateQr, 
   scanQr, 
   getUserQrs, 
-  deleteQr 
+  deleteQr,
+  updateQr 
 } from "../controllers/qrController.js";
 import { verifyToken } from "../middleware/auth.js"; 
+
 
 const router = express.Router();
 
@@ -16,5 +18,6 @@ router.get("/scan/:shortCode", scanQr);
 router.post("/generate", verifyToken, generateQr);
 router.get("/user/:userId", verifyToken, getUserQrs); // Esta es la que fallaba
 router.delete("/:id", verifyToken, deleteQr);
+router.put('/:id', verifyToken, updateQr); // Usamos PUT para actualizaciones
 
 export default router;
