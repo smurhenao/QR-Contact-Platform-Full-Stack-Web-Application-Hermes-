@@ -52,7 +52,8 @@ export const scanQr = async (req, res) => {
     const qr = await QrCode.findOne({ shortCode });
     if (!qr) return res.status(404).send("Código QR no encontrado");
 
-    qr.scanCount += 1;
+    qr.scanCount += 1; // contador
+    qr.scans.push({ timestamp: new Date() }); //agrega el historial
     await qr.save();
     res.redirect(qr.destinationUrl);
   } catch (error) {

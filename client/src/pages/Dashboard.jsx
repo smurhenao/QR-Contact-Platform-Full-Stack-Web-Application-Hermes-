@@ -18,8 +18,6 @@ const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
 
-  
-
   const fetchQrs = async () => {
     if (!token || !user) {
       navigate('/login');
@@ -30,35 +28,10 @@ const Dashboard = () => {
         headers: { 'x-auth-token': token }
       });
       setQrs(res.data);
-      console.log("QRs cargados:", res.data);
     } catch (err) {
       console.error("Error cargando QRs:", err);
     }
   };
-
-  const handleDownload = async (id, name) => {
-  const element = document.getElementById(`qr-container-${id}`);
-  if (!element) return;
-
-  try {
-    const canvas = await html2canvas(element, {
-      useCORS: true, // Permite cargar logos desde URLs externas
-      scale: 3,      // Aumenta la calidad de la descarga
-      backgroundColor: "#ffffff" // Fondo blanco sólido
-    });
-    
-    const data = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = data;
-    link.download = `QR-${name}.png`;
-    link.click();
-  } catch (err) {
-    console.error("Error al descargar:", err);
-    alert("Error al procesar la imagen del QR.");
-  }
-};
-
-  
 
   useEffect(() => {
     fetchQrs();
@@ -67,7 +40,6 @@ const Dashboard = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      // Usamos los nombres exactos que espera tu backend: name, destinationUrl, userId, color
       await axios.post('http://localhost:5000/api/qr/generate', 
         { 
           name: form.name, 
@@ -81,8 +53,26 @@ const Dashboard = () => {
       setForm({ name: '', destinationUrl: '', color: '#4f46e5', logoUrl: '' });
       fetchQrs();
     } catch (err) {
-      console.error("Error al crear:", err.response?.data);
-      alert("Error al crear el QR. Revisa la consola.");
+      alert("Error al crear el QR.");
+    }
+  };
+
+  const handleDownload = async (id, name) => {
+    const element = document.getElementById(`qr-container-${id}`);
+    if (!element) return;
+    try {
+      const canvas = await html2canvas(element, {
+        useCORS: true,
+        scale: 3,
+        backgroundColor: "#ffffff"
+      });
+      const data = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = data;
+      link.download = `QR-${name}.png`;
+      link.click();
+    } catch (err) {
+      console.error("Error al descargar:", err);
     }
   };
 
@@ -92,26 +82,45 @@ const Dashboard = () => {
   };
 
   const handleEdit = async (qr) => {
-  const newUrl = prompt("Ingresa la nueva URL de destino:", qr.destinationUrl);
-  const newName = prompt("Ingresa el nuevo nombre:", qr.name);
-
-  if (newUrl && newName) {
-    try {
-      await axios.put(`http://localhost:5000/api/qr/${qr._id}`, 
-        { name: newName, destinationUrl: newUrl },
-        { headers: { 'x-auth-token': token } }
-      );
-      fetchQrs(); // Refrescamos la lista
-    } catch (err) {
-      alert("Error al actualizar");
+    const newUrl = prompt("Ingresa la nueva URL de destino:", qr.destinationUrl);
+    const newName = prompt("Ingresa el nuevo nombre:", qr.name);
+    if (newUrl && newName) {
+      try {
+        await axios.put(`http://localhost:5000/api/qr/${qr._id}`, 
+          { name: newName, destinationUrl: newUrl },
+          { headers: { 'x-auth-token': token } }
+        );
+        fetchQrs();
+      } catch (err) {
+        alert("Error al actualizar");
+      }
     }
-  }
-};
+  };
 
+  // --- PROCESAMIENTO DE DATOS ---
   const chartData = qrs.map(qr => ({
     name: qr.name,
     escaneos: qr.scanCount
   }));
+
+  const getHourlyStats = () => {
+    const hoursArray = Array.from({ length: 24 }, (_, i) => ({
+      hora: `${i}:00`,
+      visitas: 0
+    }));
+
+    qrs.forEach(qr => {
+      if (qr.scans) {
+        qr.scans.forEach(scan => {
+          const hour = new Date(scan.timestamp).getHours();
+          hoursArray[hour].visitas++;
+        });
+      }
+    });
+    return hoursArray;
+  };
+
+  const hourlyData = getHourlyStats();
 
   return (
     <div className={styles.container}>
@@ -143,41 +152,42 @@ const Dashboard = () => {
           onChange={(e) => setForm({...form, destinationUrl: e.target.value})} 
           required 
         />
-        <div style={{ position: 'relative' }}>
-          <label style={{ fontSize: '10px', position: 'absolute', top: '-15px', right: '0', color: '#4f46e5', fontWeight: 'bold' }}>Color</label>
-          <input 
-            type="color" 
-            value={form.color} 
-            onChange={(e) => setForm({...form, color: e.target.value})}
-            style={{ border: 'none', width: '30px', height: '30px', cursor: 'pointer', background: 'none' }}
-          />
-        </div>
-        
         <input 
-  className={styles.inputField} 
-  type="text" 
-  placeholder="URL del Logo (ej. icono de tu empresa,Google o Facebook)" 
-  value={form.logoUrl} 
-  onChange={(e) => setForm({...form, logoUrl: e.target.value})} 
-/>
-
+          type="color" 
+          value={form.color} 
+          onChange={(e) => setForm({...form, color: e.target.value})}
+        />
+        <input 
+          className={styles.inputField} 
+          type="text" 
+          placeholder="URL del Logo" 
+          value={form.logoUrl} 
+          onChange={(e) => setForm({...form, logoUrl: e.target.value})} 
+        />
         <button className={styles.btnGenerate}>Generar</button>
       </form>
 
-      {qrs.length > 0 && <StatsChart data={chartData} />}
+      {/* ESTADÍSTICAS */}
+      {qrs.length > 0 && (
+        <div style={{ margin: '20px 0', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '10px' }}>
+          <h2 style={{ color: '#4f46e5' }}>Rendimiento de Escaneos 📈</h2>
+          <StatsChart data={chartData} dataKey="escaneos"/>
+          
+        
+        </div>
+      )}
 
+      {/* GRILLA DE QRS */}
       <div className={styles.qrGrid}>
         {qrs.map((qr) => (
           <div key={qr._id} className={styles.card}>
             <h3 className={styles.qrName}>{qr.name}</h3>
 
-            {/* --- PASO 1: Agregamos el id al contenedor para html2canvas --- */}
             <div 
               id={`qr-container-${qr._id}`} 
               style={{ position: 'relative', display: 'inline-block', marginBottom: '15px', padding: '10px', backgroundColor: 'white' }}
             >
               <img src={qr.qrImage} className={styles.qrImage} alt="QR" />
-              
               {qr.logoUrl && (
                 <img 
                   src={qr.logoUrl} 
@@ -190,58 +200,73 @@ const Dashboard = () => {
                     height: '35px',
                     backgroundColor: 'white',
                     padding: '3px',
-                    borderRadius: '6px',
-                    border: '1px solid #eee'
+                    borderRadius: '6px'
                   }} 
                 />
               )}
             </div>
 
-            {/* 2. CONTADOR DE ESCANEOS */}
             <div className={styles.scanBox}>
               <span className={styles.scanCount}>{qr.scanCount}</span>
               <small className={styles.scanLabel}>ESCANEOS</small>
             </div>
             
-            {/* 3. BOTONES */}
-            <button onClick={() => handleOpenLink(qr.shortCode)} className={styles.btnAction}>
-              Abrir
-            </button>
-            
-            {/* --- PASO 2: Botón de descarga actualizado con handleDownload --- */}
+            <button onClick={() => handleOpenLink(qr.shortCode)} className={styles.btnAction}>Abrir</button>
+            <button onClick={() => handleDownload(qr._id, qr.name)} className={styles.btnAction}>Descargar</button>
+            <button onClick={() => handleEdit(qr)} className={styles.btnAction} style={{ backgroundColor: '#75cbe6' }}>Editar</button>
             <button 
-              onClick={() => handleDownload(qr._id, qr.name)} 
-              className={styles.btnAction}
+              onClick={async () => {
+                if(confirm("¿Eliminar?")) {
+                  try {
+                    await axios.delete(`http://localhost:5000/api/qr/${qr._id}`, {
+                      headers: { 'x-auth-token': token }
+                    });
+                    fetchQrs();
+                  } catch (e) { alert("Error al borrar"); }
+                }
+              }} 
+              className={styles.btnDelete}
             >
-              Descargar
+              Eliminar
             </button>
-
-      {/* El botón de editar lo ponemos aquí para que resalte */}
-      <button 
-        onClick={() => handleEdit(qr)} 
-        className={styles.btnAction}
-        style={{ backgroundColor: '#75cbe6ff', color: '#0e0601ff' }} 
-      >
-        Editar
-      </button>
-      
-      <button 
-        onClick={async () => {
-          if(confirm("¿Eliminar?")) {
-            try {
-              await axios.delete(`http://localhost:5000/api/qr/${qr._id}`, {
-                headers: { 'x-auth-token': token }
-              });
-              fetchQrs();
-            } catch (e) { alert("Error al borrar"); }
-          }
-        }} 
-        className={styles.btnDelete}
-      >
-        Eliminar
-      </button>
-    </div>
-  ))}
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: '50px', backgroundColor: 'white', padding: '20px', borderRadius: '15px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+  <h2 style={{ color: '#1e1b4b', marginBottom: '15px' }}>Historial Reciente 🕒</h2>
+  <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+      <thead>
+        <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#64748b' }}>
+          <th style={{ padding: '10px' }}>Código</th>
+          <th style={{ padding: '10px' }}>Fecha</th>
+          <th style={{ padding: '10px' }}>Hora</th>
+        </tr>
+      </thead>
+      <tbody>
+        {qrs.flatMap(qr => 
+          (qr.scans || []).map(scan => ({
+            name: qr.name,
+            date: new Date(scan.timestamp).toLocaleDateString(),
+            time: new Date(scan.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            rawDate: new Date(scan.timestamp)
+          }))
+        )
+        .sort((a, b) => b.rawDate - a.rawDate) // Ordenar por los más recientes
+        .slice(0, 100) // Mostrar solo los últimos 10
+        .map((scan, index) => (
+          <tr key={index} style={{ borderBottom: '1px solid #f1f5f9' }}>
+            <td style={{ padding: '10px', fontWeight: 'bold' }}>{scan.name}</td>
+            <td style={{ padding: '10px' }}>{scan.date}</td>
+            <td style={{ padding: '10px' }}>{scan.time}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {qrs.every(qr => !qr.scans?.length) && (
+      <p style={{ textAlign: 'center', color: '#94a3b8', marginTop: '10px' }}>Aún no hay escaneos registrados.</p>
+    )}
+  </div>
 </div>
     </div>
   );

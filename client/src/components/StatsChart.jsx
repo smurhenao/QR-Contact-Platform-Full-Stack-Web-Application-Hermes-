@@ -1,6 +1,6 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import {  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
-const StatsChart = ({ data }) => {
+const StatsChart = ({ data,dataKey,title }) => {
   return (
     <div style={{ 
       width: '100%', 
@@ -37,7 +37,7 @@ const StatsChart = ({ data }) => {
           />
           <Area 
             type="monotone" 
-            dataKey="escaneos" 
+            dataKey={dataKey || "escaneos"} 
             stroke="#4f46e5" 
             strokeWidth={3} 
             fillOpacity={1} 

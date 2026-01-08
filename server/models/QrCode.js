@@ -8,6 +8,9 @@ const qrSchema = new mongoose.Schema({
   shortCode: { type: String, unique: true },
   qrImage: { type: String }, 
   scanCount: { type: Number, default: 0 },
+  scans: [{ 
+   timestamp: { type: Date, default: Date.now } 
+   }],
   createdAt: { type: Date, default: Date.now },
   color: { type: String, default: "#000000" },
   bgColor: { type: String, default: "#ffffff" },
