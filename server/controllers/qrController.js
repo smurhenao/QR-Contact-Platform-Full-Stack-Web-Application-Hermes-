@@ -2,70 +2,74 @@ import QrCode from "../models/QrCode.js";
 import QRCodeLib from "qrcode";
 import { nanoid } from "nanoid";
 
-// 1. GENERAR: Crea el QR y lo guarda en la DB
+// 1. GENERAR: Crea el QR con colores y lo guarda
 export const generateQr = async (req, res) => {
   try {
-    const { name, type, destinationUrl, userId } = req.body;
+    // Aseguramos que recibimos todas las variables necesarias
+    const { name, type, destinationUrl, userId, color, bgColor } = req.body;
+    
+    if (!destinationUrl || !userId) {
+      return res.status(400).json({ error: "Faltan datos obligatorios" });
+    }
+
     const shortCode = nanoid(6); 
     const redirectUrl = `http://localhost:5000/api/qr/scan/${shortCode}`;
 
-    // Generamos la imagen física
-    const qrImage = await QRCodeLib.toDataURL(redirectUrl);
+    // Generamos la imagen física con los colores elegidos
+    const qrImage = await QRCodeLib.toDataURL(redirectUrl, {
+      color: {
+        dark: color || "#000000",   
+        light: bgColor || "#ffffff" 
+      },
+      margin: 1
+    });
 
     const newQr = new QrCode({
       user: userId,
-      name,
-      type,
+      name: name || "Sin nombre",
+      type: type || "custom",
       destinationUrl,
       shortCode,
-      qrImage // 👈 ¡AQUÍ se guarda en la DB!
+      qrImage,
+      color: color || "#000000",
+      bgColor: bgColor || "#ffffff"
     });
 
     await newQr.save();
-
-    res.status(201).json({ msg: "QR Generado", qrImage, shortCode });
+    res.status(201).json(newQr);
   } catch (error) {
+    console.error("Error en generateQr:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// 2. ESCANEAR: La función que cuenta el clic y redirige
+// 2. ESCANEAR: Redirección y contador
 export const scanQr = async (req, res) => {
   try {
     const { shortCode } = req.params;
-
-    // Buscamos el QR por su código corto
     const qr = await QrCode.findOne({ shortCode });
+    if (!qr) return res.status(404).send("Código QR no encontrado");
 
-    if (!qr) {
-      return res.status(404).send("Código QR no encontrado");
-    }
-
-    // Sumamos 1 al contador de escaneos
     qr.scanCount += 1;
     await qr.save();
-
-    // Redirección al destino real
     res.redirect(qr.destinationUrl);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// 3. LISTAR: Trae todos los QRs de un usuario específico
+// 3. LISTAR: Trae los QRs de un usuario
 export const getUserQrs = async (req, res) => {
   try {
     const { userId } = req.params;
-    
     const qrs = await QrCode.find({ user: userId }).sort({ createdAt: -1 });
-    
     res.status(200).json(qrs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// 4. ELIMINAR: Borra un QR de la base de datos
+// 4. ELIMINAR
 export const deleteQr = async (req, res) => {
   try {
     const { id } = req.params;

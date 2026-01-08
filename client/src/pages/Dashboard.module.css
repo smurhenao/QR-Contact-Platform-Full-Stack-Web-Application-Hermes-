@@ -43,6 +43,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 25px;
+  margin-top: 50px;
 }
 
 .card {
@@ -123,13 +124,22 @@
 
 /* Botón Eliminar (Rojo suave) */
 .btnDelete {
-  background-color: #fee2e2;
+  width: 100%;       /* Asegura que ocupe todo el ancho como los otros */
+  padding: 12px;     /* Misma altura */
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;   /* Mismo espacio superior */
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background-color: #fee2e2; /* Tu color rojo suave */
   color: #dc2626;
 }
-.btnDelete:hover {
-  background-color: #fecaca;
-}
-
 /* Botón Generar (Principal) */
 .btnGenerate {
   background-color: #4f46e5;

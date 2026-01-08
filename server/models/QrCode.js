@@ -9,6 +9,9 @@ const qrSchema = new mongoose.Schema({
   qrImage: { type: String }, 
   scanCount: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
+
+  color: { type: String, default: "#000000" },
+  bgColor: { type: String, default: "#ffffff" }
 });
 
 export default mongoose.model("QrCode", qrSchema);

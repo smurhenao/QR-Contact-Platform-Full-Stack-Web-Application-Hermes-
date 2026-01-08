@@ -19,13 +19,7 @@ function App() {
 
         {/* Ruta Privada: Solo entra si hay Token */}
         <Route 
-          path="/dashboard" 
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          } 
-        />
+          path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
 
         {/* Redirigir cualquier otra cosa al login */}
         <Route path="*" element={<Navigate to="/login" />} />
