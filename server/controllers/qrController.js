@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 export const generateQr = async (req, res) => {
   try {
     // Aseguramos que recibimos todas las variables necesarias
-    const { name, type, destinationUrl, userId, color, bgColor } = req.body;
+    const { name, type, destinationUrl, userId, color, bgColor, logoUrl } = req.body;
     
     if (!destinationUrl || !userId) {
       return res.status(400).json({ error: "Faltan datos obligatorios" });
@@ -21,7 +21,8 @@ export const generateQr = async (req, res) => {
         dark: color || "#000000",   
         light: bgColor || "#ffffff" 
       },
-      margin: 1
+      margin: 1,
+      errorCorrectionLevel: 'H'
     });
 
     const newQr = new QrCode({
@@ -32,7 +33,8 @@ export const generateQr = async (req, res) => {
       shortCode,
       qrImage,
       color: color || "#000000",
-      bgColor: bgColor || "#ffffff"
+      bgColor: bgColor || "#ffffff",
+      logoUrl: logoUrl || ""
     });
 
     await newQr.save();
