@@ -1,5 +1,5 @@
 🇺🇸 English | [🇪🇸 Español](README_ES.md)
-# 🕊️ Hermes — Plataforma de Gestión de QRs Dinámicos y Analíticas Pro
+# 🕊️ Hermes — Dynamic QR Management Platform & Analytics Pro
 
 ### 📌 General Description
 Hermes is a **Full Stack (MERN)** solution designed for the creation, customization, and metric tracking of QR codes.
