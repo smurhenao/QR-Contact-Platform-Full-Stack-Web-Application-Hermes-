@@ -35,7 +35,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   font-size: 0.95rem;
-  width: 100%;
+  width: 99%;
 }
 
 /* Grid de Tarjetas */
@@ -161,9 +161,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  border-bottom: 0px solid #ffffff;
 }
 
 .btnLogout {
@@ -190,4 +190,27 @@
   display: inline-block;
   margin-bottom: 20px;
   color: #4338ca;
+}
+
+.navbarSmall {
+  display: flex;
+  justify-content: flex-start; /* Alineado a la izquierda como en la landing */
+  padding: 00px 05%; /* El mismo padding lateral de la landing */
+  background: transparent;
+}
+
+.logoLink {
+  font-size: 24px;
+  font-weight: 800;
+  color: #4f46e5;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.logoLink:hover {
+  opacity: 0.8;
+}
+
+.loginContainer {
+  margin-top: -20px; 
 }

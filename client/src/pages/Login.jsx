@@ -22,8 +22,15 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.container} style={{maxWidth: '400px', marginTop: '100px'}}>
-      <h1 className={styles.title}>Entrar a Hermes 🕊️</h1>
+    
+    <div className={styles.container} style={{maxWidth: '1800px', marginTop: '0px'}}>
+      <nav className={styles.navbarSmall}>
+  <Link to="/" className={styles.logoLink}>
+    Inicio 🕊️
+  </Link>
+</nav>
+
+      <h2 className={styles.title}>Entrar a Hermes 🕊️</h2>
       <form onSubmit={handleSubmit} className={styles.card} style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
         <input 
           className={styles.inputField} 

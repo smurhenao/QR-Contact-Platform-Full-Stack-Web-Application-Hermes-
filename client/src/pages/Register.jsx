@@ -19,7 +19,13 @@ const Register = () => {
   };
 
   return (
-    <div className={styles.container} style={{maxWidth: '400px', marginTop: '80px'}}>
+    <div className={styles.container} style={{maxWidth: '1800px', marginTop: '0px'}}>
+      <nav className={styles.navbarSmall}>
+  <Link to="/" className={styles.logoLink}>
+    Inicio 🕊️
+  </Link>
+</nav>
+
       <h1 className={styles.title}>Crear Cuenta 🕊️</h1>
       <form onSubmit={handleSubmit} className={styles.card} style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
         <input 

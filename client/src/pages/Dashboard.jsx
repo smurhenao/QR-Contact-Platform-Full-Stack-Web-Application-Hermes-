@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './Dashboard.module.css';
 import StatsChart from '../components/StatsChart.jsx';
 import html2canvas from 'html2canvas';
@@ -125,7 +125,10 @@ const Dashboard = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Hermes 🕊️</h1>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+    <h1 className={styles.title}>inicio 🕊️</h1>
+  </Link>
+        <h1 className={styles.title}>Dashboard: </h1>
         <button onClick={() => { localStorage.clear(); navigate('/login'); }} className={styles.btnLogout}>
           Cerrar Sesión 🚪
         </button>

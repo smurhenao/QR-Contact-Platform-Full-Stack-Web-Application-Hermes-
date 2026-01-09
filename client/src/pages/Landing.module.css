@@ -1,0 +1,122 @@
+.landingContainer {
+  font-family: 'Inter', sans-serif;
+  color: #1e1b4b;
+  background: radial-gradient(circle at top right, #f8fafc, #ffffff);
+  min-height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 10%;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.8); 
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: #4f46e5;
+}
+
+.hero {
+  text-align: center;
+  padding: 100px 10%;
+}
+
+.mainTitle {
+  font-size: 72px; 
+  font-weight: 900;
+  letter-spacing: -3px; 
+  line-height: 1.1; 
+  margin-bottom: 25px;
+}
+
+.gradientText {
+  background: linear-gradient(90deg, #1791f5, #ea33d2);
+  background-clip: text; 
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.btnCTA {
+  background: #4f46e5;
+  color: white;
+  padding: 18px 36px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+}
+
+.btnCTA:hover {
+  transform: translateY(-3px);
+  background: #4338ca;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 50px 10%;
+}
+
+.featureCard {
+ background: white;
+  padding: 40px 30px; /* Más aire arriba y abajo */
+  border-radius: 24px;
+  border: 1px solid #f1f5f9;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+  border-color: #4f46e5;
+}
+
+.btnSecondary {
+  background: transparent;
+  color: #4f46e5;
+  border: 1px solid #4f46e5;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: all 0.2s;
+}
+
+.btnSecondary:hover {
+  background: rgba(79, 70, 229, 0.05);
+}
+
+.btnPrimarySmall {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btnPrimarySmall:hover {
+  opacity: 0.9;
+}
+
+
+
+
+
